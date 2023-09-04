@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+#Configure your Nginx server to have a custom 404 page that contains the string
+
+sudo apt-get -y update
+sudo apt-get -y install nginx
+
+echo "Hello World!" | sudo tee /var/www/html/index.html
+
+string_for_replacement="server_name _;\n\trewrite ^\/redirect_me https:\/\/github.com\/edwin254hub permanent;"
+
+sudo sed -i "s/server_name _;/$string_for_replacement/" /etc/nginx/sites-enabled/default
+
+# Creating a 404 Custom error page
+
+echo "Ceci n'est pas une page" | sudo tee /var/www/html/404.html
+
+string_for_replacement="listen 80 default_server;\n\terror_page 404 \/404.html;\n\tlocation = \/404.html {\n\t\troot \/var\/www\/html;\n\t\tinternal;\n\t}"
+
+sudo sed -i "s/listen 80 default_server;/$string_for_replacement/" /etc/nginx/sites-enabled/default
+# Custom HTTP  response header
+
+sudo sed -i "server_name _;/a add_header X-Served-By $HOSTNAME;" /etc/nginx/sites-enabled/default
+
+# Test for syntax errors
+
+sudo nginx -t
+
+# restart nginx after implementing changes
+
+sudo service nginx restart
