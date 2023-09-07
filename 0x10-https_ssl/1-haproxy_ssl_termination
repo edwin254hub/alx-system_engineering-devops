@@ -34,17 +34,13 @@ defaults
         errorfile 504 /etc/haproxy/errors/504.http
 
 frontend http_front
-        bind *:80
-        reqadd X-Fowarded-Proto:\ http
-        default_backend http_back
-
-frontend http_front
         bind *:443 ssl crt /etc/letsencrypt/live/www.holb2023q4flcj.tech/www.holb2023q4flcj.pem
         http-request add-header X-Fowarded-Proto http
         http-request redirect scheme https if !{ ssl_fc }
         default_backend http_back
 
 backend http_back
+        balance roundrobin
         redirect scheme https if !{ ssl_fc }
         server web-01 54.172.182.220:80 check
         server web-02 54.209.245.237:80 check
