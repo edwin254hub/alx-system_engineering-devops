@@ -22,7 +22,7 @@ server {
 	listen 80 default_server;
 	listen [::]:80 default_server;
 
-	add_header X-Served-By 245915-web-01;
+	add_header X-Served-By $HOSTNAME;
 
 	# SSL configuration
 	#
@@ -57,6 +57,8 @@ server {
 		# First attempt to serve request as file, then
 		# as directory, then fall back to displaying a 404.
 		try_files $uri $uri/ =404;
+		include proxy_params;
+		proxy_pass http://0.0.0.0:5003/2-hbnb;
 	}
 
 	location /airbnb-onepage/ {
@@ -72,6 +74,10 @@ server {
 	location /api/ {
 		include proxy_params;
 		proxy_pass http://0.0.0.0:5002;
+	}
+
+	location /static/ {
+		root /home/ubuntu/AirBnB_clone_v4/web_dynamic;		
 	}
 
 	# pass PHP scripts to FastCGI server
