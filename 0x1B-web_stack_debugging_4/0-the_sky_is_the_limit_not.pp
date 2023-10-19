@@ -1,5 +1,9 @@
-# Fixing the number of failed requests to 0
-exec { 'fix--for-nginx':
-  command => "sed -i 's/worker_processes 4;/worker_processes 7;/g' /etc/nginx/nginx.conf; sudo service nginx restart",
-  path    => ['/bin', '/usr/bin', '/usr/sbin']
+# increases the upper limit and restart nginx
+exec { 'increase upper limit':
+  provider => shell,
+  command  => 'sed -i s/15/1000000/ /etc/default/nginx'
+}
+exec { 'restart nginx server':
+  provider => shell,
+  command  => 'service nginx restart'
 }
